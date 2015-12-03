@@ -34,7 +34,7 @@ int main (void)
 	double start = omp_get_wtime();
 //	#pragma omp parallel for
     //Основной цикл - N (10^6) экспериментов
-    struct postion finalmc[101];
+    struct position finalmc[101];
     finalmc[0].x = 0;
     finalmc[0].y = 0;
 	for (int exp = 0; exp <= en; exp+=1)
