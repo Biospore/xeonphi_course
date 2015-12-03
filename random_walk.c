@@ -9,12 +9,14 @@
 #define radToDeg( radians ) ( ( radians ) * ( 180.0 / PI ) )
 
 //Структура для хранения координат
-struct position {
+struct position
+{
 	double x;
 	double y;
 };
 
-int main (void){
+int main (void)
+{
     //Поток, необходим для vdRngUniform и vdRngGaussian
 	VSLStreamStatePtr stream;
 	vslNewStream( &stream, VSL_BRNG_MT19937, 1);
@@ -23,8 +25,8 @@ int main (void){
 	double da = 0.0;
 	double sigma = 300.3;
 	double dsigma = 2*PI;
-	int en = 10000;
-	double seed[10000];
+	int en = 100;
+	double seed[100];
     //Создание семян генерации
 	vdRngUniform(VSL_RNG_METHOD_UNIFORM_STD, stream, en, seed, 1, 2000);
 	vslDeleteStream(&stream);
@@ -32,7 +34,8 @@ int main (void){
 	double start = omp_get_wtime();
 //	#pragma omp parallel for
     //Основной цикл - N (10^6) экспериментов
-	for (int exp = 0; exp <= en; exp+=1){
+	for (int exp = 0; exp <= en; exp+=1)
+    {
 	    vslNewStream( &stream, VSL_BRNG_MT19937, seed[exp]);
 		struct position walk[101];
         //Начальные координаты
@@ -48,7 +51,8 @@ int main (void){
 		double sins[100];
 		double iv[100];
         //Преобразование радиан в градусы
-		for (int i=0; i<100; i+=1){
+		for (int i=0; i<100; i+=1)
+        {
 			iv[i] = radToDeg(directions[i]);
 		}
         //Поиск косинусов и синусов углов
@@ -57,7 +61,8 @@ int main (void){
 //		#pragma offload target(mic)
 //		#pragma omp parallel for shared(walk, coss, sins, lengths)
         //Генерация 100 шагов
-		for (int step = 1; step <= 100; step += 1){
+		for (int step = 1; step <= 100; step += 1)
+        {
 			//calculate step as (length*cos(angle)+x;length*sin(angle)+y);
 			double old_x = walk[step-1].x;
 			double old_y = walk[step-1].y;
@@ -68,7 +73,8 @@ int main (void){
 		char filename[80];
 		sprintf(filename, "samples/sample%d", exp);
 		output = fopen(filename, "w+");
-		for (int step=0; step<=100; step+=1){
+		for (int step=0; step<=100; step+=1)
+        {
 			fprintf(output, "%f %f\n", walk[step].x, walk[step].y);
 		}
 		fclose(output);
