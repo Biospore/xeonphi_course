@@ -34,6 +34,9 @@ int main (void)
 	double start = omp_get_wtime();
 //	#pragma omp parallel for
     //Основной цикл - N (10^6) экспериментов
+    struct postion final[101];
+    final[0].x = 0;
+    final[0].y = 0;
 	for (int exp = 0; exp <= en; exp+=1)
     {
 	    vslNewStream( &stream, VSL_BRNG_MT19937, seed[exp]);
@@ -68,6 +71,9 @@ int main (void)
 			double old_y = walk[step-1].y;
 			walk[step].x = lengths[step-1]*coss[step-1]+old_x;
 			walk[step].y = lengths[step-1]*sins[step-1]+old_y;
+            //Сумма отдельных шагов всех частиц
+            final[step].x += walk[step].x;
+            final[step].y += walk[step].y;
 //			printf("nx:%f\tny:%f\n", walk[step].x, walk[step].y);
 		}
 		char filename[80];
@@ -80,6 +86,21 @@ int main (void)
 		fclose(output);
 		vslDeleteStream(&stream);
 	}
+    //Расчет общего движения частицы путем суммирования положения
+    //после каждого шага и деления на кол-во частиц
+    for (int step = 1; step <= en; step += 1)
+    {
+        final[step].x = final[step].x / en;
+        final[step].y = final[step].y / en;
+    }
+    char filename[80];
+    sprintf(filename, "samples/final");
+    output = fopen(filename, "w+");
+    for (int step = 0; step<=100; step+=1)
+    {
+        fprintf(output, "%f %f\n", final[step].x, final[step].y);
+    }
+    fclose(output);
 //	vslDeleteStream( &stream );
 //	printf("Hi!\n");
 	double end = omp_get_wtime();
